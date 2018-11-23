@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- namesapce的值是dao接口的全限定名 -->
+<mapper namespace="com.baizhi.dao.RecordDao">
+	<resultMap type="com.baizhi.entity.Record" id="recMap">
+        <result column="auction_time" property="auction_time"/>
+        <result column="auction_price" property="auction_price"/>
+        <collection property="userList" ofType="com.baizhi.entity.User">
+             <result column="user_name" property="user_name"/>
+        </collection>
+	    
+	</resultMap>
+<insert id="addRec">
+     insert into auction_record values(record_seq.nextval,#{user_id},#{auction_id},sysdate,#{auction_price})
+</insert>
+<select id="selectRec" resultMap="recMap">
+select r.auction_time,r.auction_price,u.user_name
+        from auction_record r left join auction_user u
+        on r.user_id = u.user_id
+        where auction_id=#{auction_id}
+        order by r.auction_time desc
+</select>
+</mapper>

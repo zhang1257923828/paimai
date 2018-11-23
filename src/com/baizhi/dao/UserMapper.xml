@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- namesapce的值是dao接口的全限定名 -->
+<mapper namespace="com.baizhi.dao.UserDao">
+	
+<select id="login" resultType="com.baizhi.entity.User">
+    select * from auction_user where user_name=#{name} and user_password=#{password}
+</select>
+<insert id="reg">
+    insert into auction_user values(user_seq.nextval,#{user_name},#{user_password},#{user_card_no},
+    #{user_tel},#{user_address},#{user_post_number},1,111,111)
+</insert>
+
+
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:cache="http://www.springframework.org/schema/cache" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+            http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-4.3.xsd
+            http://www.springframework.org/schema/mvc
+            http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+            " >
+			
+			<!-- 1.把方法映射成地址
+				 2.把方法返回值转换成要请求的地址
+			 -->
+			<context:component-scan base-package="com.baizhi.controller"></context:component-scan>
+			
+			<!-- 通过mvc标签加载mvc相关的注解 -->
+			<mvc:annotation-driven></mvc:annotation-driven>
+			
+			<mvc:annotation-driven conversion-service="conversionService"></mvc:annotation-driven>
+			
+			<!-- 视图解析器：把逻辑视图解析成物理视图，以转发的方式请求 -->
+			<!-- 通过bean标签配置视图解析器 -->
+			<!-- 视图解析器，把逻辑视图名前加一个前缀，后面加一个后缀，形成物理视图 -->
+			<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+			    <property name="prefix" value="/"></property>
+			    <property name="suffix" value=".jsp"></property>
+			</bean>
+			
+			
+			
+			<!-- 验证码 -->
+			<bean id="config" class="com.google.code.kaptcha.util.Config">
+			    <constructor-arg>
+			        <props>
+			            <prop key="kaptcha.textproducer.char.length">4</prop>
+			        </props>
+			    </constructor-arg>
+			</bean>
+			
+			<bean class="com.google.code.kaptcha.impl.DefaultKaptcha">
+			    <property name="config" ref="config"></property>
+			</bean>
+			
+			<!--配置日期类型转换器  -->
+	 <bean class="com.baizhi.util.MyDateConverter" id="myDateConverter">
+	 		<!--自定义一个日期类型时 -->
+	 		<property name="pattern" value="yyyy-MM-dd"></property>
+	 </bean>
+	 
+	 <!-- 把自己定义类型转换器注册到类型转换器工厂中 -->
+	 <bean class="org.springframework.format.support.FormattingConversionServiceFactoryBean" id="conversionService">
+	 	<property name="converters">
+	 		<set>
+	 			<!--依赖于日期类型转换器  -->
+	 			<ref bean="myDateConverter"/>
+	 		</set>
+	 	</property>
+	 </bean>
+	 
+	 
+		<!-- 文件上传解析器	 -->
+	<bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver"></bean>		
+			
+	
+	<!-- 配置拦截器 -->
+			<mvc:interceptors>
+			    <mvc:interceptor>
+			        <mvc:mapping path="/**"/>
+			        <mvc:exclude-mapping path="/log.do"/>
+			        <mvc:exclude-mapping path="/reg.do"/>
+			        <mvc:exclude-mapping path="/getKaptcha.do"/>
+			        <bean class="com.baizhi.interceptor.AuthInterceptor"></bean>
+			    </mvc:interceptor>
+			</mvc:interceptors>
+			
+</beans>
